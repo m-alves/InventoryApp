@@ -136,6 +136,12 @@ public class DetailActivity extends AppCompatActivity implements
             mDeleteButton.setVisibility(View.GONE);
         }
 
+        mDeleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDeleteConfirmationDialog();
+                }
+        });
     }
 
     /**
