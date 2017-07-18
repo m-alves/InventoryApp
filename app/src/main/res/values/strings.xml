@@ -89,7 +89,7 @@
     <string name="hint_item_name">Name</string>
 
     <!-- Text hint for breed field in the editor [CHAR LIMIT=30] -->
-    <string name="hint_item_price">Price</string>
+    <string name="hint_item_price">0</string>
 
     <!-- Text hint for name field in the editor [CHAR LIMIT=30] -->
     <string name="hint_item_quantity">Quantity</string>
@@ -117,4 +117,7 @@
 
     <!-- Label for the pet's breed if the breed is unknown [CHAR LIMIT=20] -->
     <string name="add_image_button">Add image</string>
+
+    <!-- Label for the pet's breed if the breed is unknown [CHAR LIMIT=20] -->
+    <string name="negative_quantity_alert">Quantity must be positive.</string>
 </resources>

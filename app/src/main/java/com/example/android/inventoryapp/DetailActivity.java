@@ -142,6 +142,36 @@ public class DetailActivity extends AppCompatActivity implements
                 showDeleteConfirmationDialog();
                 }
         });
+
+        mIncreaseQuantityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int a=Integer.parseInt(mQuantityEditText.getText().toString());
+
+                int b=a+1;
+
+                mQuantityEditText.setText(new Integer(b).toString());
+            }
+        });
+
+        mDecreaseQuantityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int a=Integer.parseInt(mQuantityEditText.getText().toString());
+                int b;
+                if(a > 0) {
+                    b = a - 1;
+                }
+                else{
+                    b = 0;
+                    Toast.makeText(DetailActivity.this, getString(R.string.negative_quantity_alert),
+                            Toast.LENGTH_SHORT).show();
+                }
+
+                mQuantityEditText.setText(new Integer(b).toString());
+            }
+        });
+
     }
 
     /**
