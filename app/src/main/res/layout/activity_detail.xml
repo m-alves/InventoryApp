@@ -78,12 +78,24 @@
                 style="@style/CategoryStyle"
                 android:text="@string/category_price" />
 
-            <EditText
-                android:id="@+id/price_edit"
-                style="@style/EditorFieldStyle"
-                android:hint="@string/hint_item_price"
-                android:inputType="numberDecimal" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_weight="2">
 
+                <EditText
+                    android:id="@+id/price_edit"
+                    style="@style/EditorFieldStyle"
+                    android:hint="@string/hint_item_price"
+                    android:inputType="numberDecimal" />
+                <TextView
+
+                    android:id="@+id/label_weight_units"
+                    android:layout_alignRight="@+id/quantity_edit"
+                    android:text="€"
+                    style="@style/EditorUnitsStyle"/>
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
@@ -120,6 +132,8 @@
                     android:text="0"
                     android:fontFamily="sans-serif-light"
                     android:inputType="number" />
+
+
 
                 <Button
                     android:id="@+id/increase_button"

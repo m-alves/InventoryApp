@@ -132,6 +132,8 @@ public class DetailActivity extends AppCompatActivity implements
         mIncreaseQuantityButton.setOnTouchListener(mTouchListener);
         mDecreaseQuantityButton.setOnTouchListener(mTouchListener);
 
+
+
         if (mCurrentItemUri == null) {
             mDeleteButton.setVisibility(View.GONE);
         }
