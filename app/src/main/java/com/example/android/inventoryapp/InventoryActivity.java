@@ -24,8 +24,6 @@ import android.widget.Toast;
 
 import com.example.android.inventoryapp.Data.ItemContract.ItemEntry;
 
-import static android.R.attr.id;
-
 public class InventoryActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>{
 
@@ -34,6 +32,8 @@ public class InventoryActivity extends AppCompatActivity implements
 
     /** Adapter for the ListView */
     ItemCursorAdapter mCursorAdapter;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +77,9 @@ public class InventoryActivity extends AppCompatActivity implements
                 // {@link PetEntry#CONTENT_URI}.
                 // For example, the URI would be "content://com.example.android.pets/pets/2"
                 // if the pet with ID 2 was clicked on.
+
                 Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
+                Log.v("ListClickURI", currentItemUri.toString());
 
                 // Set the URI on the data field of the intent
                 intent.setData(currentItemUri);
@@ -132,18 +134,25 @@ public class InventoryActivity extends AppCompatActivity implements
         return imageUriString ;
     }
 
+    /*ItemCursorAdapter.setOnSellClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Log.d("TAG", "OnSellClickListener");
+        }
+    });*/
 
 
-
-    private void updateQuantity(){
+    public void updateQuantity(long id){
         Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
+        Log.v("URI", currentItemUri.toString());
         ContentValues values = new ContentValues();
         TextView quantityInventory = (TextView) findViewById(R.id.quantity_inventory);
         int a = Integer.parseInt(quantityInventory.getText().toString());
         int b = a - 1;
         String updatedQuantity = new Integer(b).toString();
+        Log.v("updatedQuantity", updatedQuantity);
 
-        values.put(ItemEntry.COLUMN_ITEM_NAME, updatedQuantity);
+        values.put(ItemEntry.COLUMN_ITEM_QUANTITY, updatedQuantity);
         int rowsAffected = getContentResolver().update(currentItemUri, values, null, null);
 
         // Show a toast message depending on whether or not the update was successful.

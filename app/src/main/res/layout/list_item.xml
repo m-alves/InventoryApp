@@ -93,7 +93,7 @@
         android:id="@+id/sell_button"
         android:layout_width="wrap_content"
         android:layout_height="48dp"
-        android:focusable="false"
+        android:focusable="true"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:text="Sell"/>

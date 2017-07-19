@@ -2,9 +2,11 @@ package com.example.android.inventoryapp;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
@@ -15,6 +17,8 @@ import com.example.android.inventoryapp.Data.ItemContract.ItemEntry;
  */
 
 public class ItemCursorAdapter extends CursorAdapter {
+
+    //private View.OnClickListener onSellClickListener;
 
     /**
      * Constructs a new {@link ItemCursorAdapter}.
@@ -52,12 +56,13 @@ public class ItemCursorAdapter extends CursorAdapter {
      *                correct row.
      */
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, Context context, final Cursor cursor) {
         // Find individual views that we want to modify in the list item layout
         TextView nameTextView = (TextView) view.findViewById(R.id.name_inventory);
         TextView priceTextView = (TextView) view.findViewById(R.id.price_inventory);
         TextView quantityTextView = (TextView) view.findViewById(R.id.quantity_inventory);
-
+        final Button sellButton = (Button) view.findViewById(R.id.sell_button);
+        sellButton.setTag(cursor.getPosition());
         // Find the columns of pet attributes that we're interested in
         int nameColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_NAME);
         int priceColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_PRICE);
@@ -73,6 +78,28 @@ public class ItemCursorAdapter extends CursorAdapter {
         priceTextView.setText(itemPrice);
         quantityTextView.setText(itemQuantity);
 
+        sellButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.v("Clicked", "Yes");
+                int position = (int) sellButton.getTag();
+                cursor.moveToPosition(position);
+                long id = cursor.getLong(cursor.getColumnIndex(ItemEntry._ID));
+                ((InventoryActivity) v.getContext()).updateQuantity(id);
+            }
+        });
+
+        //sellButton.setOnClickListener(this.onSellClickListener);
 
     }
+
+   /* public void setOnSellClickListener(final View.OnClickListener onClickListener) {
+        this.onSellClickListener = onClickListener;
+    }*/
+
+
 }
+
+
+
+
