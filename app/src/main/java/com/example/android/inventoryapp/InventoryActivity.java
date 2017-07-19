@@ -19,8 +19,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.inventoryapp.Data.ItemContract.ItemEntry;
+
+import static android.R.attr.id;
 
 public class InventoryActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>{
@@ -45,6 +49,9 @@ public class InventoryActivity extends AppCompatActivity implements
                 startActivity(intent);
             }
         });
+
+
+
 
         // Find the ListView which will be populated with the pet data
         ListView itemListView = (ListView) findViewById(R.id.list);
@@ -82,6 +89,8 @@ public class InventoryActivity extends AppCompatActivity implements
 
         // Kick off the loader
         getLoaderManager().initLoader(ITEM_LOADER, null, this);
+
+
 
     }
 
@@ -124,6 +133,33 @@ public class InventoryActivity extends AppCompatActivity implements
     }
 
 
+
+
+    private void updateQuantity(){
+        Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
+        ContentValues values = new ContentValues();
+        TextView quantityInventory = (TextView) findViewById(R.id.quantity_inventory);
+        int a = Integer.parseInt(quantityInventory.getText().toString());
+        int b = a - 1;
+        String updatedQuantity = new Integer(b).toString();
+
+        values.put(ItemEntry.COLUMN_ITEM_NAME, updatedQuantity);
+        int rowsAffected = getContentResolver().update(currentItemUri, values, null, null);
+
+        // Show a toast message depending on whether or not the update was successful.
+        if (rowsAffected == 0) {
+            // If no rows were affected, then there was an error with the update.
+            Toast.makeText(this, getString(R.string.detail_update_item_failed),
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            // Otherwise, the update was successful and we can display a toast.
+            Toast.makeText(this, getString(R.string.detail_update_item_successful),
+                    Toast.LENGTH_SHORT).show();
+        }
+
+        getLoaderManager().restartLoader(0, null, this);
+
+    }
 
     /**
      * Helper method to delete all pets in the database.
