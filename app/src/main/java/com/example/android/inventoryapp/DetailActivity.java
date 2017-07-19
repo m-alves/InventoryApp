@@ -79,6 +79,7 @@ public class DetailActivity extends AppCompatActivity implements
         }
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -173,6 +174,24 @@ public class DetailActivity extends AppCompatActivity implements
                 mQuantityEditText.setText(new Integer(b).toString());
             }
         });
+
+        mOrderButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String itemName = mNameEditText.getText().toString().trim();;
+                String subject = "Order request for " + itemName;
+                String message = "We would like to order the following item: " + itemName;;
+                Intent intent = new Intent(Intent.ACTION_SENDTO);
+                intent.setData(Uri.parse("mailto:"));
+                intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+                intent.putExtra(Intent.EXTRA_TEXT, message);
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intent);
+                }
+            }
+        });
+
+
 
     }
 
