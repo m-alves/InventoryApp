@@ -19,7 +19,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.inventoryapp.Data.ItemContract.ItemEntry;
@@ -142,17 +141,8 @@ public class InventoryActivity extends AppCompatActivity implements
     });*/
 
 
-    public void updateQuantity(long id){
-        Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
-        Log.v("URI", currentItemUri.toString());
-        ContentValues values = new ContentValues();
-        TextView quantityInventory = (TextView) findViewById(R.id.quantity_inventory);
-        int a = Integer.parseInt(quantityInventory.getText().toString());
-        int b = a - 1;
-        String updatedQuantity = new Integer(b).toString();
-        Log.v("updatedQuantity", updatedQuantity);
+    public void updateQuantity(Uri currentItemUri, ContentValues values){
 
-        values.put(ItemEntry.COLUMN_ITEM_QUANTITY, updatedQuantity);
         int rowsAffected = getContentResolver().update(currentItemUri, values, null, null);
 
         // Show a toast message depending on whether or not the update was successful.

@@ -1,7 +1,10 @@
 package com.example.android.inventoryapp;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.inventoryapp.Data.ItemContract.ItemEntry;
 
@@ -26,8 +30,12 @@ public class ItemCursorAdapter extends CursorAdapter {
      * @param context The context
      * @param c       The cursor from which to get the data.
      */
+
+    Context mContext;
     public ItemCursorAdapter(Context context, Cursor c) {
+
         super(context, c, 0 /* flags */);
+
     }
 
     /**
@@ -60,9 +68,10 @@ public class ItemCursorAdapter extends CursorAdapter {
         // Find individual views that we want to modify in the list item layout
         TextView nameTextView = (TextView) view.findViewById(R.id.name_inventory);
         TextView priceTextView = (TextView) view.findViewById(R.id.price_inventory);
-        TextView quantityTextView = (TextView) view.findViewById(R.id.quantity_inventory);
+        final TextView quantityTextView = (TextView) view.findViewById(R.id.quantity_inventory);
         final Button sellButton = (Button) view.findViewById(R.id.sell_button);
         sellButton.setTag(cursor.getPosition());
+        mContext = context;
         // Find the columns of pet attributes that we're interested in
         int nameColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_NAME);
         int priceColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_PRICE);
@@ -85,7 +94,20 @@ public class ItemCursorAdapter extends CursorAdapter {
                 int position = (int) sellButton.getTag();
                 cursor.moveToPosition(position);
                 long id = cursor.getLong(cursor.getColumnIndex(ItemEntry._ID));
-                ((InventoryActivity) v.getContext()).updateQuantity(id);
+                Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
+                Log.v("URI", currentItemUri.toString());
+                int quantity = Integer.parseInt(quantityTextView.getText().toString());
+                if(quantity > 0){
+                    quantity -= 1;
+                } else {
+                    Toast.makeText(mContext,  mContext.getResources().getString(R.string.negative_quantity_alert),
+                            Toast.LENGTH_SHORT).show();
+                }
+                ContentValues values = new ContentValues();
+                values.put(ItemEntry.COLUMN_ITEM_QUANTITY, new Integer(quantity).toString());
+                Log.v("Quantity String", new Integer(quantity).toString());
+                ((InventoryActivity) v.getContext()).updateQuantity(currentItemUri, values);
+
             }
         });
 
