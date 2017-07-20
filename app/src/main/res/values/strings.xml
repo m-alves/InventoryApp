@@ -120,4 +120,7 @@
 
     <!-- Label for the pet's breed if the breed is unknown [CHAR LIMIT=20] -->
     <string name="negative_quantity_alert">Quantity must be positive.</string>
+
+    <!-- Label for the pet's breed if the breed is unknown [CHAR LIMIT=20] -->
+    <string name="depleted_quantity_alert">No more items left!</string>
 </resources>

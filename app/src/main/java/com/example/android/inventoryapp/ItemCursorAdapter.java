@@ -91,22 +91,26 @@ public class ItemCursorAdapter extends CursorAdapter {
             @Override
             public void onClick(View v) {
                 Log.v("Clicked", "Yes");
+                int flag = 0;
                 int position = (int) sellButton.getTag();
                 cursor.moveToPosition(position);
                 long id = cursor.getLong(cursor.getColumnIndex(ItemEntry._ID));
                 Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
                 Log.v("URI", currentItemUri.toString());
                 int quantity = Integer.parseInt(quantityTextView.getText().toString());
-                if(quantity > 0){
+                if(quantity > 1){
                     quantity -= 1;
+                } else if (quantity == 1){
+                    quantity -=1;
+                    flag += 1;
                 } else {
-                    Toast.makeText(mContext,  mContext.getResources().getString(R.string.negative_quantity_alert),
+                    Toast.makeText(mContext,  mContext.getResources().getString(R.string.depleted_quantity_alert),
                             Toast.LENGTH_SHORT).show();
                 }
                 ContentValues values = new ContentValues();
                 values.put(ItemEntry.COLUMN_ITEM_QUANTITY, new Integer(quantity).toString());
                 Log.v("Quantity String", new Integer(quantity).toString());
-                ((InventoryActivity) v.getContext()).updateQuantity(currentItemUri, values);
+                ((InventoryActivity) v.getContext()).updateQuantity(currentItemUri, values, flag);
 
             }
         });

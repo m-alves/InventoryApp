@@ -141,20 +141,26 @@ public class InventoryActivity extends AppCompatActivity implements
     });*/
 
 
-    public void updateQuantity(Uri currentItemUri, ContentValues values){
+    public void updateQuantity(Uri currentItemUri, ContentValues values, int flag){
 
         int rowsAffected = getContentResolver().update(currentItemUri, values, null, null);
 
+        Integer quantity = values.getAsInteger(ItemEntry.COLUMN_ITEM_QUANTITY);
         // Show a toast message depending on whether or not the update was successful.
         if (rowsAffected == 0) {
             // If no rows were affected, then there was an error with the update.
             Toast.makeText(this, getString(R.string.detail_update_item_failed),
                     Toast.LENGTH_SHORT).show();
-        } else {
+        } else if (values.containsKey(ItemEntry.COLUMN_ITEM_QUANTITY) && quantity > 0) {
+            // Otherwise, the update was successful and we can display a toast.
+            Toast.makeText(this, getString(R.string.detail_update_item_successful),
+                            Toast.LENGTH_SHORT).show();
+        } else if (values.containsKey(ItemEntry.COLUMN_ITEM_QUANTITY) && flag  == 1) {
             // Otherwise, the update was successful and we can display a toast.
             Toast.makeText(this, getString(R.string.detail_update_item_successful),
                     Toast.LENGTH_SHORT).show();
         }
+
 
         getLoaderManager().restartLoader(0, null, this);
 
