@@ -14,6 +14,7 @@ import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -216,7 +217,9 @@ public class DetailActivity extends AppCompatActivity implements
     {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             mImageUri = data.getData();
-            mImageEdit.setImageURI(mImageUri);
+            Log.v("image uri", mImageUri.toString());
+            /*saveItem();
+            getLoaderManager().restartLoader(0, null, this);*/
         }
     }
     /**
@@ -229,9 +232,10 @@ public class DetailActivity extends AppCompatActivity implements
         String priceString = mPriceEditText.getText().toString().trim();
         String quantityString = mQuantityEditText.getText().toString().trim();
         String supplierString = mSupplierEditText.getText().toString().trim();
-        String imageString =
+        String imageString = mImageUri.toString();
 
-                //mImageUri.toString();
+                //getUriStringToDrawable(this, R.drawable.dummy_item);
+
 
         // Check if this is supposed to be a new pet
         // and check if all the fields in the editor are blank
