@@ -10,6 +10,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +26,11 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.android.inventoryapp.Data.ItemContract.ItemEntry;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class DetailActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -62,6 +68,10 @@ public class DetailActivity extends AppCompatActivity implements
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
     private Uri mImageUri;
+
+    String mCurrentPhotoPath;
+
+    File mPhotoFile;
 
 
     /** Uri of image */
@@ -138,7 +148,6 @@ public class DetailActivity extends AppCompatActivity implements
         mDecreaseQuantityButton.setOnTouchListener(mTouchListener);
 
 
-
         if (mCurrentItemUri == null) {
             mDeleteButton.setVisibility(View.GONE);
         }
@@ -147,15 +156,15 @@ public class DetailActivity extends AppCompatActivity implements
             @Override
             public void onClick(View v) {
                 showDeleteConfirmationDialog();
-                }
+            }
         });
 
         mIncreaseQuantityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int a=Integer.parseInt(mQuantityEditText.getText().toString());
+                int a = Integer.parseInt(mQuantityEditText.getText().toString());
 
-                int b=a+1;
+                int b = a + 1;
 
                 mQuantityEditText.setText(new Integer(b).toString());
             }
@@ -164,12 +173,11 @@ public class DetailActivity extends AppCompatActivity implements
         mDecreaseQuantityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int a=Integer.parseInt(mQuantityEditText.getText().toString());
+                int a = Integer.parseInt(mQuantityEditText.getText().toString());
                 int b;
-                if(a > 0) {
+                if (a > 0) {
                     b = a - 1;
-                }
-                else{
+                } else {
                     b = 0;
                     Toast.makeText(DetailActivity.this, getString(R.string.negative_quantity_alert),
                             Toast.LENGTH_SHORT).show();
@@ -182,9 +190,11 @@ public class DetailActivity extends AppCompatActivity implements
         mOrderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String itemName = mNameEditText.getText().toString().trim();;
+                String itemName = mNameEditText.getText().toString().trim();
+                ;
                 String subject = "Order request for " + itemName;
-                String message = "We would like to order the following item: " + itemName;;
+                String message = "We would like to order the following item: " + itemName;
+                ;
                 Intent intent = new Intent(Intent.ACTION_SENDTO);
                 intent.setData(Uri.parse("mailto:"));
                 intent.putExtra(Intent.EXTRA_SUBJECT, subject);
@@ -195,33 +205,98 @@ public class DetailActivity extends AppCompatActivity implements
             }
         });
 
-        mAddImageButton.setOnClickListener(new View.OnClickListener(){
+        mAddImageButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-               dispatchTakePictureIntent();
+                dispatchTakePictureIntent();
             }
         });
+
+        try {
+            mPhotoFile = createImageFile();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        mImageUri = Uri.parse(mCurrentPhotoPath);
+
+        /*SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String timeStamp = dateFormat.format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        try {
+            File image = File.createTempFile(
+                    imageFileName,  *//* prefix *//*
+                    ".jpg",         *//* suffix *//*
+                    storageDir      *//* directory *//*
+            );
+            mCurrentPhotoPath = image.getAbsolutePath();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }*/
     }
 
-    private void dispatchTakePictureIntent(){
+    /*private void dispatchTakePictureIntent(){
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
-    }
+    }*/
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            mImageUri = data.getData();
-            Log.v("image uri", mImageUri.toString());
-            /*saveItem();
-            getLoaderManager().restartLoader(0, null, this);*/
+            //mImageUri = data.getData();
+            saveItem();
+            getLoaderManager().restartLoader(0, null, this );
+
         }
     }
+
+
+
+    private File createImageFile() throws IOException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String timeStamp  = dateFormat.format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+        mCurrentPhotoPath = image.getAbsolutePath();
+        //mImageUri = Uri.parse(mCurrentPhotoPath);
+        Log.v("image uri", mCurrentPhotoPath);
+        return image;
+    }
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            /*File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }*/
+            if (mPhotoFile != null) {
+                //takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        }
+    }
+
+    /*private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(mCurrentPhotoPath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        this.sendBroadcast(mediaScanIntent);
+    }*/
     /**
      * Get user input from editor and save pet into database.
      */
