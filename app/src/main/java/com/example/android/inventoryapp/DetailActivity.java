@@ -10,6 +10,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -23,8 +24,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.android.inventoryapp.Data.ItemContract.ItemEntry;
-
-import static com.example.android.inventoryapp.InventoryActivity.getUriStringToDrawable;
 
 public class DetailActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -59,6 +58,10 @@ public class DetailActivity extends AppCompatActivity implements
     private Button mIncreaseQuantityButton;
 
     private Button mDecreaseQuantityButton;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+
+    private Uri mImageUri;
+
 
     /** Uri of image */
     //private Uri mImageUri;
@@ -191,10 +194,31 @@ public class DetailActivity extends AppCompatActivity implements
             }
         });
 
+        mAddImageButton.setOnClickListener(new View.OnClickListener(){
 
-
+            @Override
+            public void onClick(View v) {
+               dispatchTakePictureIntent();
+            }
+        });
     }
 
+    private void dispatchTakePictureIntent(){
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            mImageUri = data.getData();
+            mImageEdit.setImageURI(mImageUri);
+        }
+    }
     /**
      * Get user input from editor and save pet into database.
      */
@@ -205,7 +229,9 @@ public class DetailActivity extends AppCompatActivity implements
         String priceString = mPriceEditText.getText().toString().trim();
         String quantityString = mQuantityEditText.getText().toString().trim();
         String supplierString = mSupplierEditText.getText().toString().trim();
-        String imageString = getUriStringToDrawable(this, R.drawable.dummy_item);
+        String imageString =
+
+                //mImageUri.toString();
 
         // Check if this is supposed to be a new pet
         // and check if all the fields in the editor are blank
