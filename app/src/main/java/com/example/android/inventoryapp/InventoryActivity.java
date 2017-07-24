@@ -114,6 +114,7 @@ public class InventoryActivity extends AppCompatActivity implements
         // into the pets database table.
         // Receive the new content URI that will allow us to access Toto's data in the future.
         Uri newUri = getContentResolver().insert(ItemEntry.CONTENT_URI, values);
+        Log.v("image uri invAct", newUri.toString() + dummyImageUri);
     }
 
 

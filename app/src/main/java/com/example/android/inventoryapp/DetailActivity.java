@@ -69,9 +69,11 @@ public class DetailActivity extends AppCompatActivity implements
 
     private Uri mImageUri;
 
-    String mCurrentPhotoPath;
+    private String mCurrentPhotoPath;
 
-    File mPhotoFile;
+    private String imageString;
+
+    private boolean mNewImage = false;
 
 
     /** Uri of image */
@@ -140,7 +142,7 @@ public class DetailActivity extends AppCompatActivity implements
         mPriceEditText.setOnTouchListener(mTouchListener);
         mQuantityEditText.setOnTouchListener(mTouchListener);
         mSupplierEditText.setOnTouchListener(mTouchListener);
-        mImageEdit.setOnTouchListener(mTouchListener);
+        //mImageEdit.setOnTouchListener(mTouchListener);
         mDeleteButton.setOnTouchListener(mTouchListener);
         mOrderButton.setOnTouchListener(mTouchListener);
         mAddImageButton.setOnTouchListener(mTouchListener);
@@ -213,43 +215,17 @@ public class DetailActivity extends AppCompatActivity implements
             }
         });
 
-        try {
-            mPhotoFile = createImageFile();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
 
-        mImageUri = Uri.parse(mCurrentPhotoPath);
-
-        /*SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String timeStamp = dateFormat.format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        try {
-            File image = File.createTempFile(
-                    imageFileName,  *//* prefix *//*
-                    ".jpg",         *//* suffix *//*
-                    storageDir      *//* directory *//*
-            );
-            mCurrentPhotoPath = image.getAbsolutePath();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }*/
     }
 
-    /*private void dispatchTakePictureIntent(){
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        }
-    }*/
+
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            //mImageUri = data.getData();
+
             saveItem();
             getLoaderManager().restartLoader(0, null, this );
 
@@ -269,7 +245,7 @@ public class DetailActivity extends AppCompatActivity implements
                 storageDir      /* directory */
         );
         mCurrentPhotoPath = image.getAbsolutePath();
-        //mImageUri = Uri.parse(mCurrentPhotoPath);
+        mImageUri = Uri.parse(mCurrentPhotoPath);
         Log.v("image uri", mCurrentPhotoPath);
         return image;
     }
@@ -277,14 +253,15 @@ public class DetailActivity extends AppCompatActivity implements
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            /*File photoFile = null;
+            File photoFile = null;
             try {
                 photoFile = createImageFile();
             } catch (IOException ex) {
                 ex.printStackTrace();
-            }*/
-            if (mPhotoFile != null) {
-                //takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+            }
+            if (photoFile != null) {
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+                mNewImage = true;
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
         }
@@ -307,7 +284,11 @@ public class DetailActivity extends AppCompatActivity implements
         String priceString = mPriceEditText.getText().toString().trim();
         String quantityString = mQuantityEditText.getText().toString().trim();
         String supplierString = mSupplierEditText.getText().toString().trim();
-        String imageString = mImageUri.toString();
+
+        if(mNewImage == true){
+                imageString = mImageUri.toString();
+        }
+
 
                 //getUriStringToDrawable(this, R.drawable.dummy_item);
 
@@ -343,7 +324,9 @@ public class DetailActivity extends AppCompatActivity implements
 
         values.put(ItemEntry.COLUMN_ITEM_SUPPLIER, supplierString);
 
-        values.put(ItemEntry.COLUMN_ITEM_IMAGE, imageString);
+        if(mNewImage == true) {
+            values.put(ItemEntry.COLUMN_ITEM_IMAGE, imageString);
+        }
 
         // Determine if this is a new or existing pet by checking if mCurrentPetUri is null or not
         if (mCurrentItemUri == null) {
@@ -530,6 +513,11 @@ public class DetailActivity extends AppCompatActivity implements
             mSupplierEditText.setText(supplier);
 
             Uri imageUri = Uri.parse(imageUriString);
+            if (mNewImage == true){
+                mImageEdit.setImageURI(null);
+                mImageEdit.setImageURI(imageUri);
+            }
+            mImageEdit.setImageURI(null);
             mImageEdit.setImageURI(imageUri);
 
         }
