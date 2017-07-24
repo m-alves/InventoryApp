@@ -8,6 +8,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -31,6 +33,8 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import static com.example.android.inventoryapp.InventoryActivity.getUriStringToDrawable;
 
 public class DetailActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -225,9 +229,9 @@ public class DetailActivity extends AppCompatActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-
-            saveItem();
-            getLoaderManager().restartLoader(0, null, this );
+            setPic(mCurrentPhotoPath);
+           /* saveItem();
+            getLoaderManager().restartLoader(0, null, this );*/
 
         }
     }
@@ -267,13 +271,29 @@ public class DetailActivity extends AppCompatActivity implements
         }
     }
 
-    /*private void galleryAddPic() {
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(mCurrentPhotoPath);
-        Uri contentUri = Uri.fromFile(f);
-        mediaScanIntent.setData(contentUri);
-        this.sendBroadcast(mediaScanIntent);
-    }*/
+    private void setPic(String path) {
+        // Get the dimensions of the View
+        int targetW = mImageEdit.getWidth();
+        int targetH = mImageEdit.getHeight();
+
+        // Get the dimensions of the bitmap
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(path, bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+        // Determine how much to scale down the image
+        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+
+        // Decode the image file into a Bitmap sized to fill the View
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        //bmOptions.inPurgeable = true;
+
+        Bitmap bitmap = BitmapFactory.decodeFile(path, bmOptions);
+        mImageEdit.setImageBitmap(bitmap);
+    }
     /**
      * Get user input from editor and save pet into database.
      */
@@ -513,12 +533,19 @@ public class DetailActivity extends AppCompatActivity implements
             mSupplierEditText.setText(supplier);
 
             Uri imageUri = Uri.parse(imageUriString);
-            if (mNewImage == true){
-                mImageEdit.setImageURI(null);
+            String dummyImageUri = getUriStringToDrawable(this, R.drawable.dummy_item);
+            if(imageUriString.equals(dummyImageUri) ){
                 mImageEdit.setImageURI(imageUri);
+            } else {
+                setPic(imageUriString);
             }
-            mImageEdit.setImageURI(null);
-            mImageEdit.setImageURI(imageUri);
+
+
+            //setPic(imageUriString);
+
+
+           /* mImageEdit.setImageURI(null);
+            mImageEdit.setImageURI(imageUri);*/
 
         }
     }
