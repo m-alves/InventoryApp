@@ -75,9 +75,15 @@ public class DetailActivity extends AppCompatActivity implements
 
     private String mCurrentPhotoPath;
 
-    private String imageString;
+    private String mImageString;
 
     private boolean mNewImage = false;
+
+    private boolean mValidInput = true;
+
+
+
+
 
 
     /** Uri of image */
@@ -301,16 +307,36 @@ public class DetailActivity extends AppCompatActivity implements
         // Read from input fields
         // Use trim to eliminate leading or trailing white space
         String nameString = mNameEditText.getText().toString().trim();
-        if(nameString.equals("")){
+        if(TextUtils.isEmpty(nameString)){
             Toast.makeText(this, "Please insert valid name", Toast.LENGTH_SHORT).show();
+            mValidInput=false;
             return;
         }
         String priceString = mPriceEditText.getText().toString().trim();
+        if(priceString == null){
+            Toast.makeText(this, "Please insert valid price", Toast.LENGTH_SHORT).show();
+            mValidInput=false;
+            return;
+        }
         String quantityString = mQuantityEditText.getText().toString().trim();
+        if(quantityString == null){
+            Toast.makeText(this, "Please insert valid quantity", Toast.LENGTH_SHORT).show();
+            mValidInput=false;
+            return;
+        }
         String supplierString = mSupplierEditText.getText().toString().trim();
-
+        if(TextUtils.isEmpty(supplierString)){
+            Toast.makeText(this, "Please insert valid supplier", Toast.LENGTH_SHORT).show();
+            mValidInput=false;
+            return;
+        }
         if(mNewImage == true){
-                imageString = mImageUri.toString();
+                mImageString = mImageUri.toString();
+        }
+        if(TextUtils.isEmpty(mImageString)) {
+            Toast.makeText(this, "Please add a photo", Toast.LENGTH_SHORT).show();
+            mValidInput = false;
+            return;
         }
 
 
@@ -322,7 +348,7 @@ public class DetailActivity extends AppCompatActivity implements
         if (mCurrentItemUri == null &&
                 TextUtils.isEmpty(nameString) && TextUtils.isEmpty(priceString) &&
                 TextUtils.isEmpty(quantityString) && TextUtils.isEmpty(supplierString) &&
-                TextUtils.isEmpty(imageString)) {
+                TextUtils.isEmpty(mImageString)) {
             // Since no fields were modified, we can return early without creating a new pet.
             // No need to create ContentValues and no need to do any ContentProvider operations.
             return;
@@ -349,7 +375,7 @@ public class DetailActivity extends AppCompatActivity implements
         values.put(ItemEntry.COLUMN_ITEM_SUPPLIER, supplierString);
 
         if(mNewImage == true) {
-            values.put(ItemEntry.COLUMN_ITEM_IMAGE, imageString);
+            values.put(ItemEntry.COLUMN_ITEM_IMAGE, mImageString);
         }
 
         // Determine if this is a new or existing pet by checking if mCurrentPetUri is null or not
@@ -365,6 +391,7 @@ public class DetailActivity extends AppCompatActivity implements
                         Toast.LENGTH_SHORT).show();
             } else {
                 // Otherwise, the insertion was successful and we can display a toast.
+                mValidInput=true;
                 Toast.makeText(this, getString(R.string.detail_insert_item_successful),
                         Toast.LENGTH_SHORT).show();
             }
@@ -382,6 +409,7 @@ public class DetailActivity extends AppCompatActivity implements
                         Toast.LENGTH_SHORT).show();
             } else {
                 // Otherwise, the update was successful and we can display a toast.
+                mValidInput=true;
                 Toast.makeText(this, getString(R.string.detail_update_item_successful),
                         Toast.LENGTH_SHORT).show();
             }
@@ -420,7 +448,9 @@ public class DetailActivity extends AppCompatActivity implements
                 // Save pet to database
                 saveItem();
                 // Exit activity
-                finish();
+                if(mValidInput){
+                    finish();
+                }
                 return true;
             // Respond to a click on the "Delete" menu option
             /*case R.id.action_delete:
@@ -528,7 +558,7 @@ public class DetailActivity extends AppCompatActivity implements
             int price = cursor.getInt(priceColumnIndex);
             int quantity = cursor.getInt(quantityColumnIndex);
             String supplier = cursor.getString(supplierColumnIndex);
-            String imageUriString =cursor.getString(imageColumnIndex);
+            String imageUriString = cursor.getString(imageColumnIndex);
 
             // Update the views on the screen with the values from the database
             mNameEditText.setText(name);
@@ -536,12 +566,13 @@ public class DetailActivity extends AppCompatActivity implements
             mQuantityEditText.setText(Integer.toString(quantity));
             mSupplierEditText.setText(supplier);
 
-            Uri imageUri = Uri.parse(imageUriString);
+            mImageUri = Uri.parse(imageUriString);
             String dummyImageUri = getUriStringToDrawable(this, R.drawable.dummy_item);
             if(imageUriString.equals(dummyImageUri) ){
-                mImageEdit.setImageURI(imageUri);
+                mImageEdit.setImageURI(mImageUri);
             } else {
                 setPic(imageUriString);
+                mImageString = imageUriString;
             }
 
 
