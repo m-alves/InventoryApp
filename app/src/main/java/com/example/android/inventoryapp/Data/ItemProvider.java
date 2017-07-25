@@ -7,6 +7,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.example.android.inventoryapp.Data.ItemContract.ItemEntry;
@@ -55,6 +56,10 @@ public class ItemProvider extends ContentProvider {
 
     /** Database helper object */
     private ItemDbHelper mDbHelper;
+
+    //Context mContext;
+
+
 
     @Override
     public boolean onCreate() {
@@ -129,7 +134,9 @@ public class ItemProvider extends ContentProvider {
     private Uri insertItem(Uri uri, ContentValues values) {
         // Check that the name is not null
         String name = values.getAsString(ItemEntry.COLUMN_ITEM_NAME);
+        Log.v("name", name);
         if (name == null) {
+            //Toast.makeText(getContext().getContentResolver(), "Please insert a name", Toast.LENGTH_SHORT).show();
             throw new IllegalArgumentException("Item requires a name");
         }
 
@@ -147,13 +154,13 @@ public class ItemProvider extends ContentProvider {
 
         // Check that the name is not null
         String supplier = values.getAsString(ItemEntry.COLUMN_ITEM_SUPPLIER);
-        if (supplier == null) {
+        if (TextUtils.isEmpty(supplier)) {
             throw new IllegalArgumentException("Item requires a supplier");
         }
 
         // Check that the name is not null
         String image = values.getAsString(ItemEntry.COLUMN_ITEM_IMAGE);
-        if (image == null) {
+        if (TextUtils.isEmpty(image)) {
             throw new IllegalArgumentException("Item requires an image");
         }
 

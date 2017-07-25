@@ -301,6 +301,10 @@ public class DetailActivity extends AppCompatActivity implements
         // Read from input fields
         // Use trim to eliminate leading or trailing white space
         String nameString = mNameEditText.getText().toString().trim();
+        if(nameString.equals("")){
+            Toast.makeText(this, "Please insert valid name", Toast.LENGTH_SHORT).show();
+            return;
+        }
         String priceString = mPriceEditText.getText().toString().trim();
         String quantityString = mQuantityEditText.getText().toString().trim();
         String supplierString = mSupplierEditText.getText().toString().trim();
