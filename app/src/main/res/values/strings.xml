@@ -76,44 +76,36 @@
     <!-- Label for overview category of attributes in the editor [CHAR LIMIT=30] -->
     <string name="category_name">Name</string>
 
-    <!-- Label for gender information in the editor [CHAR LIMIT=30] -->
     <string name="category_price">Price</string>
 
-    <!-- Label for measurement information in the editor [CHAR LIMIT=30] -->
     <string name="category_quantity">Quantity</string>
 
-    <!-- Label for measurement information in the editor [CHAR LIMIT=30] -->
     <string name="category_supplier">Supplier</string>
 
-    <!-- Text hint for name field in the editor [CHAR LIMIT=30] -->
     <string name="hint_item_name">Name</string>
 
-    <!-- Text hint for breed field in the editor [CHAR LIMIT=30] -->
     <string name="hint_item_price">0</string>
 
-    <!-- Text hint for name field in the editor [CHAR LIMIT=30] -->
     <string name="hint_item_quantity">Quantity</string>
 
-    <!-- Units for weight of the item (kilograms) [CHAR LIMIT=5] -->
     <string name="hint_item_supplier">Supplier</string>
 
-    <!-- Label for the item's breed if the breed is unknown [CHAR LIMIT=20] -->
     <string name="order_button">Order</string>
 
-    <!-- Label for the item's breed if the breed is unknown [CHAR LIMIT=20] -->
     <string name="delete_button">Delete</string>
 
-    <!-- Label for the item's breed if the breed is unknown [CHAR LIMIT=20] -->
     <string name="add_image_button">Add image</string>
 
-    <!-- Label for the item's breed if the breed is unknown [CHAR LIMIT=20] -->
     <string name="negative_quantity_alert">Quantity must be positive.</string>
 
-    <!-- Label for the item's breed if the breed is unknown [CHAR LIMIT=20] -->
     <string name="depleted_quantity_alert">No more items left!</string>
 
     <string name="euros">€</string>
 
     <string name="sell_button">Sell</string>
+
+    <string name="order_request">Order request for </string>
+
+    <string name="order_message">We would like to order the following item: </string>
 
 </resources>

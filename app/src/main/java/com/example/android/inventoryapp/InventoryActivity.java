@@ -26,13 +26,11 @@ import com.example.android.inventoryapp.Data.ItemContract.ItemEntry;
 public class InventoryActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>{
 
-    /** Identifier for the pet data loader */
+    /** Identifier for the item data loader */
     private static final int ITEM_LOADER = 0;
 
     /** Adapter for the ListView */
     ItemCursorAdapter mCursorAdapter;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,18 +47,14 @@ public class InventoryActivity extends AppCompatActivity implements
             }
         });
 
-
-
-
-        // Find the ListView which will be populated with the pet data
+        // Find the ListView which will be populated with the item data
         ListView itemListView = (ListView) findViewById(R.id.list);
 
         // Find and set empty view on the ListView, so that it only shows when the list has 0 items.
         View emptyView = findViewById(R.id.empty_view);
         itemListView.setEmptyView(emptyView);
 
-        // Setup an Adapter to create a list item for each row of pet data in the Cursor.
-        // There is no pet data yet (until the loader finishes) so pass in null for the Cursor.
+        // Setup an Adapter to create a list item for each row of item data in the Cursor.
         mCursorAdapter = new ItemCursorAdapter(this, null);
         itemListView.setAdapter(mCursorAdapter);
 
@@ -68,14 +62,12 @@ public class InventoryActivity extends AppCompatActivity implements
         itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                // Create new intent to go to {@link EditorActivity}
+                // Create new intent to go to {@link DetailActivity}
                 Intent intent = new Intent(InventoryActivity.this, DetailActivity.class);
 
-                // Form the content URI that represents the specific pet that was clicked on,
+                // Form the content URI that represents the specific item that was clicked on,
                 // by appending the "id" (passed as input to this method) onto the
-                // {@link PetEntry#CONTENT_URI}.
-                // For example, the URI would be "content://com.example.android.pets/pets/2"
-                // if the pet with ID 2 was clicked on.
+                // {@link ItemEntry#CONTENT_URI}.
 
                 Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
                 Log.v("ListClickURI", currentItemUri.toString());
@@ -83,42 +75,32 @@ public class InventoryActivity extends AppCompatActivity implements
                 // Set the URI on the data field of the intent
                 intent.setData(currentItemUri);
 
-                // Launch the {@link EditorActivity} to display the data for the current pet.
+                // Launch the {@link detailActivity} to display the data for the current item.
                 startActivity(intent);
             }
         });
 
         // Kick off the loader
         getLoaderManager().initLoader(ITEM_LOADER, null, this);
-
-
-
     }
 
     /**
-     * Helper method to insert hardcoded pet data into the database. For debugging purposes only.
+     * Helper method to insert hardcoded item data into the database. For debugging purposes only.
      */
     private void insertItem() {
         // Create a ContentValues object where column names are the keys,
-        // and Toto's pet attributes are the values.
+        // and the item "Hammer" attributes are the values.
         String dummyImageUri = getUriStringToDrawable(this, R.drawable.dummy_item);
         ContentValues values = new ContentValues();
-        values.put(ItemEntry.COLUMN_ITEM_NAME, "Martelo");
+        values.put(ItemEntry.COLUMN_ITEM_NAME, "Hammer");
         values.put(ItemEntry.COLUMN_ITEM_PRICE, 20);
         values.put(ItemEntry.COLUMN_ITEM_QUANTITY, 2);
         values.put(ItemEntry.COLUMN_ITEM_SUPPLIER, "TengTools" );
         values.put(ItemEntry.COLUMN_ITEM_IMAGE, dummyImageUri );
 
-        // Insert a new row for Toto into the provider using the ContentResolver.
-        // Use the {@link PetEntry#CONTENT_URI} to indicate that we want to insert
-        // into the pets database table.
-        // Receive the new content URI that will allow us to access Toto's data in the future.
+        // Insert a new row for the dummy item into the provider using the ContentResolver.
         Uri newUri = getContentResolver().insert(ItemEntry.CONTENT_URI, values);
-        Log.v("image uri invAct", newUri.toString() + dummyImageUri);
     }
-
-
-
     /**
      * get uri to drawable or any other resource type if u wish
      * @param context - context
@@ -134,14 +116,13 @@ public class InventoryActivity extends AppCompatActivity implements
         return imageUriString ;
     }
 
-    /*ItemCursorAdapter.setOnSellClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Log.d("TAG", "OnSellClickListener");
-        }
-    });*/
-
-
+    /*
+    * This method is called when the Sell button is clicked
+    * @param currentItemUri - the Uri of the item being updated
+    * @param values - the updated quantity in ContentValues object
+    * @param flag - prevents that we keep receiving the Item updated toast when
+    * quantity is already 0
+    * */
     public void updateQuantity(Uri currentItemUri, ContentValues values, int flag){
 
         int rowsAffected = getContentResolver().update(currentItemUri, values, null, null);
@@ -161,24 +142,18 @@ public class InventoryActivity extends AppCompatActivity implements
             Toast.makeText(this, getString(R.string.detail_update_item_successful),
                     Toast.LENGTH_SHORT).show();
         }
-
-
         getLoaderManager().restartLoader(0, null, this);
-
     }
 
     /**
-     * Helper method to delete all pets in the database.
+     * Helper method to delete all items in the database.
      */
     private void deleteAllItems() {
         int rowsDeleted = getContentResolver().delete(ItemEntry.CONTENT_URI, null, null);
-        Log.v("CatalogActivity", rowsDeleted + " rows deleted from inventory database");
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu options from the res/menu/menu_catalog.xml file.
-        // This adds menu items to the app bar.
         getMenuInflater().inflate(R.menu.menu_inventory, menu);
         return true;
     }
@@ -220,7 +195,7 @@ public class InventoryActivity extends AppCompatActivity implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        // Update {@link PetCursorAdapter} with this new cursor containing updated pet data
+        // Update {@link itemCursorAdapter} with this new cursor containing updated item data
         mCursorAdapter.swapCursor(data);
     }
 

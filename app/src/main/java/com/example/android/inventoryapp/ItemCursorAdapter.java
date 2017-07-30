@@ -34,7 +34,7 @@ public class ItemCursorAdapter extends CursorAdapter {
     Context mContext;
     public ItemCursorAdapter(Context context, Cursor c) {
 
-        super(context, c, 0 /* flags */);
+        super(context, c, 0);
 
     }
 
@@ -54,8 +54,8 @@ public class ItemCursorAdapter extends CursorAdapter {
     }
 
     /**
-     * This method binds the pet data (in the current row pointed to by cursor) to the given
-     * list item layout. For example, the name for the current pet can be set on the name TextView
+     * This method binds the item data (in the current row pointed to by cursor) to the given
+     * list item layout. For example, the name for the current item can be set on the name TextView
      * in the list item layout.
      *
      * @param view    Existing view, returned earlier by newView() method
@@ -72,21 +72,23 @@ public class ItemCursorAdapter extends CursorAdapter {
         final Button sellButton = (Button) view.findViewById(R.id.sell_button);
         sellButton.setTag(cursor.getPosition());
         mContext = context;
-        // Find the columns of pet attributes that we're interested in
+        // Find the columns of item attributes that we're interested in
         int nameColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_NAME);
         int priceColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_PRICE);
         int quantityColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_QUANTITY);
 
-        // Read the pet attributes from the Cursor for the current pet
+        // Read the item attributes from the Cursor for the current item
         String itemName = cursor.getString(nameColumnIndex);
         String itemPrice = cursor.getString(priceColumnIndex);
         String itemQuantity = cursor.getString(quantityColumnIndex);
 
-        // Update the TextViews with the attributes for the current pet
+        // Update the TextViews with the attributes for the current item
         nameTextView.setText(itemName);
         priceTextView.setText(itemPrice);
         quantityTextView.setText(itemQuantity);
 
+        // When the sell button is clicked, the quantity is decreased if > 0.
+        // Also, the quantity is updated in the database through updateQuantity()
         sellButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -96,7 +98,6 @@ public class ItemCursorAdapter extends CursorAdapter {
                 cursor.moveToPosition(position);
                 long id = cursor.getLong(cursor.getColumnIndex(ItemEntry._ID));
                 Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
-                Log.v("URI", currentItemUri.toString());
                 int quantity = Integer.parseInt(quantityTextView.getText().toString());
                 if(quantity > 1){
                     quantity -= 1;
@@ -109,21 +110,12 @@ public class ItemCursorAdapter extends CursorAdapter {
                 }
                 ContentValues values = new ContentValues();
                 values.put(ItemEntry.COLUMN_ITEM_QUANTITY, new Integer(quantity).toString());
-                Log.v("Quantity String", new Integer(quantity).toString());
+                //This way of calling a method defined in an activity inside an adapter
+                // was described in an answer in StackOverFlow.
                 ((InventoryActivity) v.getContext()).updateQuantity(currentItemUri, values, flag);
-
             }
         });
-
-        //sellButton.setOnClickListener(this.onSellClickListener);
-
     }
-
-   /* public void setOnSellClickListener(final View.OnClickListener onClickListener) {
-        this.onSellClickListener = onClickListener;
-    }*/
-
-
 }
 
 

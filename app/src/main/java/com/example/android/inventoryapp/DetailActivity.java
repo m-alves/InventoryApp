@@ -40,63 +40,65 @@ import static com.example.android.inventoryapp.InventoryActivity.getUriStringToD
 public class DetailActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    /** Identifier for the pet data loader */
+    /** Identifier for the item data loader */
     private static final int EXISTING_ITEM_LOADER = 0;
 
-    /** Content URI for the existing pet (null if it's a new pet) */
+    /** Content URI for the existing item (null if it's a new item) */
     private Uri mCurrentItemUri;
 
-    /** EditText field to enter the pet's name */
+    /** EditText field to enter the item's name */
     private EditText mNameEditText;
 
-    /** EditText field to enter the pet's breed */
+    /** EditText field to enter the item's price */
     private EditText mPriceEditText;
 
-    /** EditText field to enter the pet's weight */
+    /** EditText field to enter the item's quantity */
     private EditText mQuantityEditText;
 
-    /** EditText field to enter the pet's weight */
+    /** EditText field to enter the item's supplier */
     private EditText mSupplierEditText;
 
-    /** EditText field to enter the pet's weight */
+    /** ImageView field to enter the item's image */
     private ImageView mImageEdit;
 
+    /*Delete Button*/
     private Button mDeleteButton;
 
+    /*Order button*/
     private Button mOrderButton;
 
+    /*Add image button*/
     private Button mAddImageButton;
 
+    /*Increase quantity button*/
     private Button mIncreaseQuantityButton;
 
+    /*Decrease quantity button*/
     private Button mDecreaseQuantityButton;
-    static final int REQUEST_IMAGE_CAPTURE = 1;
 
+    /*Uri of the image*/
     private Uri mImageUri;
 
+    /*String with the path of the taken photo*/
     private String mCurrentPhotoPath;
 
+    /*String with the Uri of the image*/
     private String mImageString;
 
+    /*True if the image uri corresponds to a new image*/
     private boolean mNewImage = false;
 
+    /*True if all the user input is valid*/
     private boolean mValidInput = true;
 
+    static final int REQUEST_IMAGE_CAPTURE = 1;
 
-
-
-
-
-    /** Uri of image */
-    //private Uri mImageUri;
-
-
-    /** Boolean flag that keeps track of whether the pet has been edited (true) or not (false) */
+    /** Boolean flag that keeps track of whether the item has been edited (true) or not (false) */
     private boolean mItemHasChanged = false;
 
     /**
      * OnTouchListener that listens for any user touches on a View, implying that they are modifying
-     * the view, and we change the mPetHasChanged boolean to true.
+     * the view, and we change the mItemHasChanged boolean to true.
      */
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
         @Override
@@ -113,24 +115,24 @@ public class DetailActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_detail);
 
         // Examine the intent that was used to launch this activity,
-        // in order to figure out if we're creating a new pet or editing an existing one.
+        // in order to figure out if we're creating a new item or editing an existing one.
         Intent intent = getIntent();
         mCurrentItemUri = intent.getData();
 
-        // If the intent DOES NOT contain a pet content URI, then we know that we are
-        // creating a new pet.
+        // If the intent DOES NOT contain a item content URI, then we know that we are
+        // creating a new item.
         if (mCurrentItemUri == null) {
-            // This is a new pet, so change the app bar to say "Add a Pet"
+            // This is a new item, so change the app bar to say "Add a item"
             setTitle(getString(R.string.detail_activity_title_new_item));
 
             // Invalidate the options menu, so the "Delete" menu option can be hidden.
-            // (It doesn't make sense to delete a pet that hasn't been created yet.)
+            // (It doesn't make sense to delete a item that hasn't been created yet.)
             //invalidateOptionsMenu();
         } else {
-            // Otherwise this is an existing pet, so change app bar to say "Edit Pet"
+            // Otherwise this is an existing item, so change app bar to say "Edit item"
             setTitle(getString(R.string.detail_activity_title_edit_item));
 
-            // Initialize a loader to read the pet data from the database
+            // Initialize a loader to read the item data from the database
             // and display the current values in the editor
             getLoaderManager().initLoader(EXISTING_ITEM_LOADER, null, this);
         }
@@ -153,18 +155,16 @@ public class DetailActivity extends AppCompatActivity implements
         mPriceEditText.setOnTouchListener(mTouchListener);
         mQuantityEditText.setOnTouchListener(mTouchListener);
         mSupplierEditText.setOnTouchListener(mTouchListener);
-        //mImageEdit.setOnTouchListener(mTouchListener);
         mDeleteButton.setOnTouchListener(mTouchListener);
         mOrderButton.setOnTouchListener(mTouchListener);
         mAddImageButton.setOnTouchListener(mTouchListener);
         mIncreaseQuantityButton.setOnTouchListener(mTouchListener);
         mDecreaseQuantityButton.setOnTouchListener(mTouchListener);
-
-
         if (mCurrentItemUri == null) {
             mDeleteButton.setVisibility(View.GONE);
         }
 
+        /*Behaviour of delete button*/
         mDeleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -172,17 +172,17 @@ public class DetailActivity extends AppCompatActivity implements
             }
         });
 
+        /*Behaviour of Increase Quantity button*/
         mIncreaseQuantityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int a = Integer.parseInt(mQuantityEditText.getText().toString());
-
                 int b = a + 1;
-
                 mQuantityEditText.setText(new Integer(b).toString());
             }
         });
 
+        /*Behaviour of decrease quantity button*/
         mDecreaseQuantityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -195,19 +195,17 @@ public class DetailActivity extends AppCompatActivity implements
                     Toast.makeText(DetailActivity.this, getString(R.string.negative_quantity_alert),
                             Toast.LENGTH_SHORT).show();
                 }
-
                 mQuantityEditText.setText(new Integer(b).toString());
             }
         });
 
+        /*Behaviour of order button. It opens a email app to order the item*/
         mOrderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String itemName = mNameEditText.getText().toString().trim();
-                ;
-                String subject = "Order request for " + itemName;
-                String message = "We would like to order the following item: " + itemName;
-                ;
+                String subject = getString(R.string.order_request) + itemName;
+                String message = getString(R.string.order_message) + itemName;
                 Intent intent = new Intent(Intent.ACTION_SENDTO);
                 intent.setData(Uri.parse("mailto:"));
                 intent.putExtra(Intent.EXTRA_SUBJECT, subject);
@@ -225,42 +223,13 @@ public class DetailActivity extends AppCompatActivity implements
                 dispatchTakePictureIntent();
             }
         });
-
-
     }
 
-
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            setPic(mCurrentPhotoPath);
-           /* saveItem();
-            getLoaderManager().restartLoader(0, null, this );*/
-
-        }
-    }
-
-
-
-    private File createImageFile() throws IOException {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String timeStamp  = dateFormat.format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-        mCurrentPhotoPath = image.getAbsolutePath();
-        mImageUri = Uri.parse(mCurrentPhotoPath);
-        Log.v("image uri", mCurrentPhotoPath);
-        return image;
-    }
-
+    /*This method proceeds with the capture of the image. The basic structure is the same as
+    *the example in the documentation. First, a file is created. If successful, the image is
+    * captured, saved, and its Uri is send to the activity result through the intent
+    * If a photo is taken, mNewImage is set to true so we can proceed accordingly.
+    * */
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -279,6 +248,34 @@ public class DetailActivity extends AppCompatActivity implements
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
         }
+    }
+
+    /*
+    * After the photo the image is rescaled with setPic(). The setPic() method was
+    * implemented as instructed in the documentation.
+    * */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            setPic(mCurrentPhotoPath);
+        }
+    }
+
+    private File createImageFile() throws IOException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String timeStamp  = dateFormat.format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+        mCurrentPhotoPath = image.getAbsolutePath();
+        mImageUri = Uri.parse(mCurrentPhotoPath);
+        Log.v("image uri", mCurrentPhotoPath);
+        return image;
     }
 
     private void setPic(String path) {
@@ -304,8 +301,9 @@ public class DetailActivity extends AppCompatActivity implements
         Bitmap bitmap = BitmapFactory.decodeFile(path, bmOptions);
         mImageEdit.setImageBitmap(bitmap);
     }
+
     /**
-     * Get user input from editor and save pet into database.
+     * Get user input from editor and save item into database.
      */
     private void saveItem() {
         // Read from input fields
@@ -343,23 +341,19 @@ public class DetailActivity extends AppCompatActivity implements
             return;
         }
 
-
-                //getUriStringToDrawable(this, R.drawable.dummy_item);
-
-
-        // Check if this is supposed to be a new pet
+        // Check if this is supposed to be a new item
         // and check if all the fields in the editor are blank
         if (mCurrentItemUri == null &&
                 TextUtils.isEmpty(nameString) && TextUtils.isEmpty(priceString) &&
                 TextUtils.isEmpty(quantityString) && TextUtils.isEmpty(supplierString) &&
                 TextUtils.isEmpty(mImageString)) {
-            // Since no fields were modified, we can return early without creating a new pet.
+            // Since no fields were modified, we can return early without creating a new item.
             // No need to create ContentValues and no need to do any ContentProvider operations.
             return;
         }
 
         // Create a ContentValues object where column names are the keys,
-        // and pet attributes from the editor are the values.
+        // and item attributes from the editor are the values.
         ContentValues values = new ContentValues();
 
         values.put(ItemEntry.COLUMN_ITEM_NAME, nameString);
@@ -382,10 +376,10 @@ public class DetailActivity extends AppCompatActivity implements
             values.put(ItemEntry.COLUMN_ITEM_IMAGE, mImageString);
         }
 
-        // Determine if this is a new or existing pet by checking if mCurrentPetUri is null or not
+        // Determine if this is a new or existing item by checking if mCurrentitemUri is null or not
         if (mCurrentItemUri == null) {
-            // This is a NEW pet, so insert a new pet into the provider,
-            // returning the content URI for the new pet.
+            // This is a NEW item, so insert a new item into the provider,
+            // returning the content URI for the new item.
             Uri newUri = getContentResolver().insert(ItemEntry.CONTENT_URI, values);
 
             // Show a toast message depending on whether or not the insertion was successful.
@@ -400,10 +394,8 @@ public class DetailActivity extends AppCompatActivity implements
                         Toast.LENGTH_SHORT).show();
             }
         } else {
-            // Otherwise this is an EXISTING pet, so update the pet with content URI: mCurrentPetUri
-            // and pass in the new ContentValues. Pass in null for the selection and selection args
-            // because mCurrentPetUri will already identify the correct row in the database that
-            // we want to modify.
+            // Otherwise this is an EXISTING item, so update the item with content URI: mCurrentitemUri
+            // and pass in the new ContentValues.
             int rowsAffected = getContentResolver().update(mCurrentItemUri, values, null, null);
 
             // Show a toast message depending on whether or not the update was successful.
@@ -428,42 +420,24 @@ public class DetailActivity extends AppCompatActivity implements
         return true;
     }
 
-    /**
-     * This method is called after invalidateOptionsMenu(), so that the
-     * menu can be updated (some menu items can be hidden or made visible).
-     */
-    /*@Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-        // If this is a new pet, hide the "Delete" menu item.
-        if (mCurrentItemUri == null) {
-            MenuItem menuItem = menu.findItem(R.id.action_delete);
-            menuItem.setVisible(false);
-        }
-        return true;
-    }*/
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // User clicked on a menu option in the app bar overflow menu
         switch (item.getItemId()) {
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
-                // Save pet to database
+                // Save item to database
                 saveItem();
-                // Exit activity
+                //We only exit the activity if the input is complete
+                // Otherwise the user is notified to input the item information
                 if(mValidInput){
+                    // Exit activity
                     finish();
                 }
                 return true;
-            // Respond to a click on the "Delete" menu option
-            /*case R.id.action_delete:
-                // Pop up confirmation dialog for deletion
-                showDeleteConfirmationDialog();
-                return true;
             // Respond to a click on the "Up" arrow button in the app bar*/
             case android.R.id.home:
-                // If the pet hasn't changed, continue with navigating up to parent activity
+                // If the item hasn't changed, continue with navigating up to parent activity
                 // which is the {@link CatalogActivity}.
                 if (!mItemHasChanged) {
                     NavUtils.navigateUpFromSameTask(DetailActivity.this);
@@ -471,8 +445,6 @@ public class DetailActivity extends AppCompatActivity implements
                 }
 
                 // Otherwise if there are unsaved changes, setup a dialog to warn the user.
-                // Create a click listener to handle the user confirming that
-                // changes should be discarded.
                 DialogInterface.OnClickListener discardButtonClickListener =
                         new DialogInterface.OnClickListener() {
                             @Override
@@ -487,22 +459,18 @@ public class DetailActivity extends AppCompatActivity implements
                 return true;
         }
         return super.onOptionsItemSelected(item);
-
     }
-
-
 
     /**
      * This method is called when the back button is pressed.
      */
     @Override
     public void onBackPressed() {
-        // If the pet hasn't changed, continue with handling back button press
+        // If the item hasn't changed, continue with handling back button press
         if (!mItemHasChanged) {
             super.onBackPressed();
             return;
         }
-
         // Otherwise if there are unsaved changes, setup a dialog to warn the user.
         // Create a click listener to handle the user confirming that changes should be discarded.
         DialogInterface.OnClickListener discardButtonClickListener =
@@ -520,8 +488,8 @@ public class DetailActivity extends AppCompatActivity implements
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        // Since the editor shows all pet attributes, define a projection that contains
-        // all columns from the pet table
+        // Since the editor shows all item attributes, define a projection that contains
+        // all columns from the item table
         String[] projection = {
                 ItemEntry._ID,
                 ItemEntry.COLUMN_ITEM_NAME,
@@ -532,7 +500,7 @@ public class DetailActivity extends AppCompatActivity implements
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context
-                mCurrentItemUri,         // Query the content URI for the current pet
+                mCurrentItemUri,         // Query the content URI for the current item
                 projection,             // Columns to include in the resulting Cursor
                 null,                   // No selection clause
                 null,                   // No selection arguments
@@ -550,7 +518,7 @@ public class DetailActivity extends AppCompatActivity implements
         // Proceed with moving to the first row of the cursor and reading data from it
         // (This should be the only row in the cursor)
         if (cursor.moveToFirst()) {
-            // Find the columns of pet attributes that we're interested in
+            // Find the columns of item attributes that we're interested in
             int nameColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_NAME);
             int priceColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_PRICE);
             int quantityColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_QUANTITY);
@@ -570,6 +538,8 @@ public class DetailActivity extends AppCompatActivity implements
             mQuantityEditText.setText(Integer.toString(quantity));
             mSupplierEditText.setText(supplier);
 
+            //Depending on the uri, we can put the dummy item in the imageView, or
+            // we process the item imagem with setPic()
             mImageUri = Uri.parse(imageUriString);
             String dummyImageUri = getUriStringToDrawable(this, R.drawable.dummy_item);
             if(imageUriString.equals(dummyImageUri) ){
@@ -578,14 +548,6 @@ public class DetailActivity extends AppCompatActivity implements
                 setPic(imageUriString);
                 mImageString = imageUriString;
             }
-
-
-            //setPic(imageUriString);
-
-
-           /* mImageEdit.setImageURI(null);
-            mImageEdit.setImageURI(imageUri);*/
-
         }
     }
 
@@ -617,7 +579,7 @@ public class DetailActivity extends AppCompatActivity implements
         builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Keep editing" button, so dismiss the dialog
-                // and continue editing the pet.
+                // and continue editing the item.
                 if (dialog != null) {
                     dialog.dismiss();
                 }
@@ -630,7 +592,7 @@ public class DetailActivity extends AppCompatActivity implements
     }
 
     /**
-     * Prompt the user to confirm that they want to delete this pet.
+     * Prompt the user to confirm that they want to delete this item.
      */
     private void showDeleteConfirmationDialog() {
         // Create an AlertDialog.Builder and set the message, and click listeners
@@ -639,14 +601,14 @@ public class DetailActivity extends AppCompatActivity implements
         builder.setMessage(R.string.delete_dialog_msg);
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Delete" button, so delete the pet.
-                deletePet();
+                // User clicked the "Delete" button, so delete the item.
+                deleteItem();
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Cancel" button, so dismiss the dialog
-                // and continue editing the pet.
+                // and continue editing the item.
                 if (dialog != null) {
                     dialog.dismiss();
                 }
@@ -659,14 +621,12 @@ public class DetailActivity extends AppCompatActivity implements
     }
 
     /**
-     * Perform the deletion of the pet in the database.
+     * Perform the deletion of the item in the database.
      */
-    private void deletePet() {
-        // Only perform the delete if this is an existing pet.
+    private void deleteItem() {
+        // Only perform the delete if this is an existing item.
         if (mCurrentItemUri != null) {
-            // Call the ContentResolver to delete the pet at the given content URI.
-            // Pass in null for the selection and selection args because the mCurrentPetUri
-            // content URI already identifies the pet that we want.
+            // Call the ContentResolver to delete the item at the given content URI.
             int rowsDeleted = getContentResolver().delete(mCurrentItemUri, null, null);
 
             // Show a toast message depending on whether or not the delete was successful.
@@ -680,7 +640,6 @@ public class DetailActivity extends AppCompatActivity implements
                         Toast.LENGTH_SHORT).show();
             }
         }
-
         // Close the activity
         finish();
     }
