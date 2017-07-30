@@ -124,4 +124,7 @@
     <!-- Order email message -->
     <string name="order_message">We would like to order the following item: </string>
 
+    <!-- Initial quantity. -->
+    <string name="initial_quantity">0</string>
+
 </resources>

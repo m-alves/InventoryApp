@@ -84,23 +84,7 @@ public class InventoryActivity extends AppCompatActivity implements
         getLoaderManager().initLoader(ITEM_LOADER, null, this);
     }
 
-    /**
-     * Helper method to insert hardcoded item data into the database. For debugging purposes only.
-     */
-    private void insertItem() {
-        // Create a ContentValues object where column names are the keys,
-        // and the item "Hammer" attributes are the values.
-        String dummyImageUri = getUriStringToDrawable(this, R.drawable.dummy_item);
-        ContentValues values = new ContentValues();
-        values.put(ItemEntry.COLUMN_ITEM_NAME, "Hammer");
-        values.put(ItemEntry.COLUMN_ITEM_PRICE, 20);
-        values.put(ItemEntry.COLUMN_ITEM_QUANTITY, 2);
-        values.put(ItemEntry.COLUMN_ITEM_SUPPLIER, "TengTools" );
-        values.put(ItemEntry.COLUMN_ITEM_IMAGE, dummyImageUri );
 
-        // Insert a new row for the dummy item into the provider using the ContentResolver.
-        Uri newUri = getContentResolver().insert(ItemEntry.CONTENT_URI, values);
-    }
     /**
      * get uri to drawable or any other resource type if u wish
      * @param context - context
@@ -165,10 +149,6 @@ public class InventoryActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         // User clicked on a menu option in the app bar overflow menu
         switch (item.getItemId()) {
-            // Respond to a click on the "Insert dummy data" menu option
-            case R.id.action_insert_dummy_data:
-                insertItem();
-                return true;
             // Respond to a click on the "Delete all entries" menu option
             case R.id.action_delete_all_entries:
                 deleteAllItems();

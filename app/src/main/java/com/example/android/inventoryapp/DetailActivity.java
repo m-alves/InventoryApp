@@ -539,7 +539,7 @@ public class DetailActivity extends AppCompatActivity implements
             mSupplierEditText.setText(supplier);
 
             //Depending on the uri, we can put the dummy item in the imageView, or
-            // we process the item imagem with setPic()
+            // we process the item image with setPic()
             mImageUri = Uri.parse(imageUriString);
             String dummyImageUri = getUriStringToDrawable(this, R.drawable.dummy_item);
             if(imageUriString.equals(dummyImageUri) ){
