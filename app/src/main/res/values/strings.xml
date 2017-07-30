@@ -123,4 +123,9 @@
 
     <!-- Label for the pet's breed if the breed is unknown [CHAR LIMIT=20] -->
     <string name="depleted_quantity_alert">No more items left!</string>
+
+    <string name="euros">€</string>
+
+    <string name="sell_button">Sell</string>
+
 </resources>

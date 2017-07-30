@@ -31,7 +31,6 @@
             android:layout_width="120dp"
             android:layout_height="160dp"
             android:padding="8dp"
-
             android:layout_centerInParent="true"
             />
 
@@ -94,7 +93,7 @@
 
                     android:id="@+id/label_weight_units"
                     android:layout_alignRight="@+id/quantity_edit"
-                    android:text="€"
+                    android:text="@string/euros"
                     style="@style/EditorUnitsStyle"/>
             </LinearLayout>
         </LinearLayout>
@@ -130,7 +129,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:layout_alignRight="@+id/increase_button"
-                    android:text="0"
+                    android:hint="0"
                     android:fontFamily="sans-serif-light"
                     android:inputType="number" />
 
