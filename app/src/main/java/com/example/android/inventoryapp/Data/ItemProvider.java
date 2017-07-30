@@ -20,46 +20,28 @@ public class ItemProvider extends ContentProvider {
     /** Tag for the log messages */
     public static final String LOG_TAG = ItemProvider.class.getSimpleName();
 
-    /** URI matcher code for the content URI for the pets table */
+    /** URI matcher code for the content URI for the items table */
     private static final int ITEMS = 100;
 
-    /** URI matcher code for the content URI for a single pet in the pets table */
+    /** URI matcher code for the content URI for a single item in the items table */
     private static final int ITEM_ID = 101;
 
     /**
      * UriMatcher object to match a content URI to a corresponding code.
-     * The input passed into the constructor represents the code to return for the root URI.
-     * It's common to use NO_MATCH as the input for this case.
      */
     private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     // Static initializer. This is run the first time anything is called from this class.
     static {
         // The calls to addURI() go here, for all of the content URI patterns that the provider
-        // should recognize. All paths added to the UriMatcher have a corresponding code to return
-        // when a match is found.
-
-        // The content URI of the form "content://com.example.android.pets/pets" will map to the
-        // integer code {@link #PETS}. This URI is used to provide access to MULTIPLE rows
-        // of the pets table.
+        // should recognize.
         sUriMatcher.addURI(ItemContract.CONTENT_AUTHORITY, ItemContract.PATH_ITEMS, ITEMS);
 
-        // The content URI of the form "content://com.example.android.pets/pets/#" will map to the
-        // integer code {@link #PET_ID}. This URI is used to provide access to ONE single row
-        // of the pets table.
-        //
-        // In this case, the "#" wildcard is used where "#" can be substituted for an integer.
-        // For example, "content://com.example.android.pets/pets/3" matches, but
-        // "content://com.example.android.pets/pets" (without a number at the end) doesn't match.
         sUriMatcher.addURI(ItemContract.CONTENT_AUTHORITY, ItemContract.PATH_ITEMS + "/#", ITEM_ID);
     }
 
     /** Database helper object */
     private ItemDbHelper mDbHelper;
-
-    //Context mContext;
-
-
 
     @Override
     public boolean onCreate() {
@@ -80,26 +62,17 @@ public class ItemProvider extends ContentProvider {
         int match = sUriMatcher.match(uri);
         switch (match) {
             case ITEMS:
-                // For the PETS code, query the pets table directly with the given
-                // projection, selection, selection arguments, and sort order. The cursor
-                // could contain multiple rows of the pets table.
+                // For the items code, query the items table directly with the given
+                // projection, selection, selection arguments, and sort order.
                 cursor = database.query(ItemEntry.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
                 break;
             case ITEM_ID:
-                // For the PET_ID code, extract out the ID from the URI.
-                // For an example URI such as "content://com.example.android.pets/pets/3",
-                // the selection will be "_id=?" and the selection argument will be a
-                // String array containing the actual ID of 3 in this case.
-                //
-                // For every "?" in the selection, we need to have an element in the selection
-                // arguments that will fill in the "?". Since we have 1 question mark in the
-                // selection, we have 1 String in the selection arguments' String array.
+                // For the item_ID code, extract out the ID from the URI.
+
                 selection = ItemEntry._ID + "=?";
                 selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
 
-                // This will perform a query on the pets table where the _id equals 3 to return a
-                // Cursor containing that row of the table.
                 cursor = database.query(ItemEntry.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
                 break;
@@ -116,6 +89,9 @@ public class ItemProvider extends ContentProvider {
         return cursor;
     }
 
+    /*
+    * This method inserts new items in the database, through a call on insertItem()
+    * */
     @Override
     public Uri insert(Uri uri, ContentValues contentValues) {
         final int match = sUriMatcher.match(uri);
@@ -128,7 +104,7 @@ public class ItemProvider extends ContentProvider {
     }
 
     /**
-     * Insert a pet into the database with the given content values. Return the new content URI
+     * Insert a item into the database with the given content values. Return the new content URI
      * for that specific row in the database.
      */
     private Uri insertItem(Uri uri, ContentValues values) {
@@ -136,40 +112,37 @@ public class ItemProvider extends ContentProvider {
         String name = values.getAsString(ItemEntry.COLUMN_ITEM_NAME);
         Log.v("name", name);
         if (name == null) {
-            //Toast.makeText(getContext().getContentResolver(), "Please insert a name", Toast.LENGTH_SHORT).show();
             throw new IllegalArgumentException("Item requires a name");
         }
 
-        // Check that the gender is valid
+        // Check that price is valid
         Integer price = values.getAsInteger(ItemEntry.COLUMN_ITEM_PRICE);
         if (price == null || price <= 0) {
             throw new IllegalArgumentException("Item requires valid price");
         }
 
-        // If the weight is provided, check that it's greater than or equal to 0 kg
+        // If quantity is valid
         Integer quantity = values.getAsInteger(ItemEntry.COLUMN_ITEM_QUANTITY);
         if (quantity == null || quantity < 0) {
             throw new IllegalArgumentException("Item requires valid quantity");
         }
 
-        // Check that the name is not null
+        // Check that the supplier is not null
         String supplier = values.getAsString(ItemEntry.COLUMN_ITEM_SUPPLIER);
         if (TextUtils.isEmpty(supplier)) {
             throw new IllegalArgumentException("Item requires a supplier");
         }
 
-        // Check that the name is not null
+        // Check that the image uri is not null
         String image = values.getAsString(ItemEntry.COLUMN_ITEM_IMAGE);
         if (TextUtils.isEmpty(image)) {
             throw new IllegalArgumentException("Item requires an image");
         }
 
-
-
         // Get writeable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
-        // Insert the new pet with the given values
+        // Insert the new item with the given values
         long id = database.insert(ItemEntry.TABLE_NAME, null, values);
         // If the ID is -1, then the insertion failed. Log an error and return null.
         if (id == -1) {
@@ -177,7 +150,7 @@ public class ItemProvider extends ContentProvider {
             return null;
         }
 
-        // Notify all listeners that the data has changed for the pet content URI
+        // Notify all listeners that the data has changed for the item content URI
         getContext().getContentResolver().notifyChange(uri, null);
 
         // Return the new URI with the ID (of the newly inserted row) appended at the end
@@ -190,27 +163,21 @@ public class ItemProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case ITEMS:
-                return updatePet(uri, contentValues, selection, selectionArgs);
+                return updateItem(uri, contentValues, selection, selectionArgs);
             case ITEM_ID:
-                // For the PET_ID code, extract out the ID from the URI,
-                // so we know which row to update. Selection will be "_id=?" and selection
-                // arguments will be a String array containing the actual ID.
                 selection = ItemEntry._ID + "=?";
                 selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
-                return updatePet(uri, contentValues, selection, selectionArgs);
+                return updateItem(uri, contentValues, selection, selectionArgs);
             default:
                 throw new IllegalArgumentException("Update is not supported for " + uri);
         }
     }
 
     /**
-     * Update pets in the database with the given content values. Apply the changes to the rows
-     * specified in the selection and selection arguments (which could be 0 or 1 or more pets).
-     * Return the number of rows that were successfully updated.
+     * Update items in the database with the given content values. Input validation is performed
+     * in all the required fields.
      */
-    private int updatePet(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        // If the {@link PetEntry#COLUMN_PET_NAME} key is present,
-        // check that the name value is not null.
+    private int updateItem(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         if (values.containsKey(ItemEntry.COLUMN_ITEM_NAME)) {
             String name = values.getAsString(ItemEntry.COLUMN_ITEM_NAME);
             if (name == null) {
@@ -218,8 +185,6 @@ public class ItemProvider extends ContentProvider {
             }
         }
 
-        // If the {@link PetEntry#COLUMN_PET_GENDER} key is present,
-        // check that the gender value is valid.
         if (values.containsKey(ItemEntry.COLUMN_ITEM_PRICE)) {
             Integer price = values.getAsInteger(ItemEntry.COLUMN_ITEM_PRICE);
             if (price == null || price <= 0) {
@@ -227,8 +192,6 @@ public class ItemProvider extends ContentProvider {
             }
         }
 
-        // If the {@link PetEntry#COLUMN_PET_WEIGHT} key is present,
-        // check that the weight value is valid.
         if (values.containsKey(ItemEntry.COLUMN_ITEM_QUANTITY)) {
             // Check that the weight is greater than or equal to 0 kg
             Integer quantity = values.getAsInteger(ItemEntry.COLUMN_ITEM_QUANTITY);
@@ -237,8 +200,6 @@ public class ItemProvider extends ContentProvider {
             }
         }
 
-        // If the {@link PetEntry#COLUMN_PET_NAME} key is present,
-        // check that the name value is not null.
         if (values.containsKey(ItemEntry.COLUMN_ITEM_SUPPLIER)) {
             String supplier = values.getAsString(ItemEntry.COLUMN_ITEM_SUPPLIER);
             if (supplier == null) {
@@ -246,8 +207,6 @@ public class ItemProvider extends ContentProvider {
             }
         }
 
-        // If the {@link PetEntry#COLUMN_PET_NAME} key is present,
-        // check that the name value is not null.
         if (values.containsKey(ItemEntry.COLUMN_ITEM_IMAGE)) {
             String image = values.getAsString(ItemEntry.COLUMN_ITEM_IMAGE);
             if (image == null) {
@@ -255,7 +214,6 @@ public class ItemProvider extends ContentProvider {
             }
         }
 
-        // If there are no values to update, then don't try to update the database
         if (values.size() == 0) {
             return 0;
         }

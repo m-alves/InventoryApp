@@ -12,8 +12,6 @@ import com.example.android.inventoryapp.Data.ItemContract.ItemEntry;
 
 public class ItemDbHelper extends SQLiteOpenHelper {
 
-    public static final String LOG_TAG = ItemDbHelper.class.getSimpleName();
-
     /** Name of the database file */
     private static final String DATABASE_NAME = "inventory.db";
 
@@ -24,7 +22,6 @@ public class ItemDbHelper extends SQLiteOpenHelper {
 
     /**
      * Constructs a new instance of {@link ItemDbHelper}.
-     *
      * @param context of the app
      */
     public ItemDbHelper(Context context) {
@@ -44,7 +41,6 @@ public class ItemDbHelper extends SQLiteOpenHelper {
                 + ItemEntry.COLUMN_ITEM_QUANTITY + " INTEGER NOT NULL, "
                 + ItemEntry.COLUMN_ITEM_SUPPLIER + " TEXT NOT NULL, "
                 + ItemEntry.COLUMN_ITEM_IMAGE + " TEXT NOT NULL);";
-        //Log.v("query", SQL_CREATE_ITEMS_TABLE);
         // Execute the SQL statement
         db.execSQL(SQL_CREATE_ITEMS_TABLE);
     }
@@ -54,8 +50,5 @@ public class ItemDbHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // The database is still at version 1, so there's nothing to do be done here.
     }
-
-
 }

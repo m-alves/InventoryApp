@@ -150,10 +150,13 @@ public class InventoryActivity extends AppCompatActivity implements
      */
     private void deleteAllItems() {
         int rowsDeleted = getContentResolver().delete(ItemEntry.CONTENT_URI, null, null);
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu options from the res/menu/menu_catalog.xml file.
+        // This adds menu items to the app bar.
         getMenuInflater().inflate(R.menu.menu_inventory, menu);
         return true;
     }
