@@ -35,8 +35,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static com.example.android.inventoryapp.InventoryActivity.getUriStringToDrawable;
-
 public class DetailActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -541,13 +539,8 @@ public class DetailActivity extends AppCompatActivity implements
             //Depending on the uri, we can put the dummy item in the imageView, or
             // we process the item image with setPic()
             mImageUri = Uri.parse(imageUriString);
-            String dummyImageUri = getUriStringToDrawable(this, R.drawable.dummy_item);
-            if(imageUriString.equals(dummyImageUri) ){
-                mImageEdit.setImageURI(mImageUri);
-            } else {
-                setPic(imageUriString);
-                mImageString = imageUriString;
-            }
+            setPic(imageUriString);
+            mImageString = imageUriString;
         }
     }
 
@@ -559,7 +552,7 @@ public class DetailActivity extends AppCompatActivity implements
         mPriceEditText.setText("");
         mQuantityEditText.setText("");
         mSupplierEditText.setText("");
-        mImageEdit.setImageResource(R.drawable.dummy_item); // Select "Unknown" gender
+        mImageEdit.setImageResource(0);
     }
 
     /**

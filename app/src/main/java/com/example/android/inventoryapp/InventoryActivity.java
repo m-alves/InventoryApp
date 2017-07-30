@@ -1,10 +1,8 @@
 package com.example.android.inventoryapp;
 
 import android.app.LoaderManager;
-import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -82,22 +80,6 @@ public class InventoryActivity extends AppCompatActivity implements
 
         // Kick off the loader
         getLoaderManager().initLoader(ITEM_LOADER, null, this);
-    }
-
-
-    /**
-     * get uri to drawable or any other resource type if u wish
-     * @param context - context
-     * @param drawableId - drawable res id
-     * @return - string
-     */
-    public static final String getUriStringToDrawable(Context context, int drawableId) {
-        Uri imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
-                "://" + context.getResources().getResourcePackageName(drawableId)
-                + '/' + context.getResources().getResourceTypeName(drawableId)
-                + '/' + context.getResources().getResourceEntryName(drawableId) );
-        String imageUriString = imageUri.toString();
-        return imageUriString ;
     }
 
     /*
