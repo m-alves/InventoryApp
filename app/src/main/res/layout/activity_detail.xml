@@ -54,7 +54,8 @@
                 android:id="@+id/name_edit"
                 style="@style/EditorFieldStyle"
                 android:hint="@string/hint_item_name"
-                android:inputType="textCapWords" />
+                android:inputType="textCapWords"
+                android:maxLength="20"/>
 
         </LinearLayout>
 
@@ -78,9 +79,9 @@
                     android:id="@+id/price_edit"
                     style="@style/EditorFieldStyle"
                     android:hint="@string/hint_item_price"
-                    android:inputType="numberDecimal" />
+                    android:inputType="numberDecimal"
+                    android:maxLength="8"/>
                 <TextView
-
                     android:id="@+id/label_weight_units"
                     android:layout_alignRight="@+id/quantity_edit"
                     android:text="@string/euros"
@@ -121,9 +122,8 @@
                     android:layout_alignRight="@+id/increase_button"
                     android:text="0"
                     android:fontFamily="sans-serif-light"
-                    android:inputType="number" />
-
-
+                    android:inputType="number"
+                    android:maxLength="8"/>
 
                 <Button
                     android:id="@+id/increase_button"
@@ -152,7 +152,8 @@
                 android:id="@+id/supplier_edit"
                 style="@style/EditorFieldStyle"
                 android:hint="@string/category_supplier"
-                android:inputType="textCapWords" />
+                android:inputType="textCapWords"
+                android:maxLength="20"/>
 
         </LinearLayout>
 
