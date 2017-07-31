@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -68,7 +67,6 @@ public class InventoryActivity extends AppCompatActivity implements
                 // {@link ItemEntry#CONTENT_URI}.
 
                 Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
-                Log.v("ListClickURI", currentItemUri.toString());
 
                 // Set the URI on the data field of the intent
                 intent.setData(currentItemUri);

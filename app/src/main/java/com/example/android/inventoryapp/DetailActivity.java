@@ -18,7 +18,6 @@ import android.support.v4.app.NavUtils;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -112,6 +111,7 @@ public class DetailActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
+
         // Examine the intent that was used to launch this activity,
         // in order to figure out if we're creating a new item or editing an existing one.
         Intent intent = getIntent();
@@ -125,7 +125,7 @@ public class DetailActivity extends AppCompatActivity implements
 
             // Invalidate the options menu, so the "Delete" menu option can be hidden.
             // (It doesn't make sense to delete a item that hasn't been created yet.)
-            //invalidateOptionsMenu();
+
         } else {
             // Otherwise this is an existing item, so change app bar to say "Edit item"
             setTitle(getString(R.string.detail_activity_title_edit_item));
@@ -141,6 +141,9 @@ public class DetailActivity extends AppCompatActivity implements
         mQuantityEditText = (EditText) findViewById(R.id.quantity_edit);
         mSupplierEditText = (EditText) findViewById(R.id.supplier_edit);
         mImageEdit = (ImageView) findViewById(R.id.image);
+
+
+
         mDeleteButton = (Button) findViewById(R.id.delete_button);
         mOrderButton = (Button) findViewById(R.id.order_button);
         mAddImageButton = (Button) findViewById(R.id.add_image_button);
@@ -223,6 +226,7 @@ public class DetailActivity extends AppCompatActivity implements
         });
     }
 
+
     /*This method proceeds with the capture of the image. The basic structure is the same as
     *the example in the documentation. First, a file is created. If successful, the image is
     * captured, saved, and its Uri is send to the activity result through the intent
@@ -272,14 +276,15 @@ public class DetailActivity extends AppCompatActivity implements
         );
         mCurrentPhotoPath = image.getAbsolutePath();
         mImageUri = Uri.parse(mCurrentPhotoPath);
-        Log.v("image uri", mCurrentPhotoPath);
         return image;
     }
 
     private void setPic(String path) {
         // Get the dimensions of the View
-        int targetW = mImageEdit.getWidth();
+
+        int targetW = mImageEdit.getWidth();;
         int targetH = mImageEdit.getHeight();
+
 
         // Get the dimensions of the bitmap
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
@@ -294,7 +299,6 @@ public class DetailActivity extends AppCompatActivity implements
         // Decode the image file into a Bitmap sized to fill the View
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = scaleFactor;
-        //bmOptions.inPurgeable = true;
 
         Bitmap bitmap = BitmapFactory.decodeFile(path, bmOptions);
         mImageEdit.setImageBitmap(bitmap);
