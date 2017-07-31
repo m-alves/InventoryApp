@@ -242,7 +242,6 @@ public class DetailActivity extends AppCompatActivity implements
                         BuildConfig.APPLICATION_ID + ".provider",
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                mNewImage = true;
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
         }
@@ -257,6 +256,7 @@ public class DetailActivity extends AppCompatActivity implements
     {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             setPic(mCurrentPhotoPath);
+            mNewImage = true;
         }
     }
 
@@ -312,18 +312,35 @@ public class DetailActivity extends AppCompatActivity implements
             mValidInput=false;
             return;
         }
+
+
         String priceString = mPriceEditText.getText().toString().trim();
-        if(priceString == null){
+        if(priceString == null || TextUtils.isEmpty(priceString)){
             Toast.makeText(this, "Please insert valid price", Toast.LENGTH_SHORT).show();
             mValidInput=false;
             return;
         }
+        Integer price = Integer.parseInt(mPriceEditText.getText().toString());
+        if(price <= 0){
+            Toast.makeText(this, "Please insert valid price", Toast.LENGTH_SHORT).show();
+            mValidInput=false;
+            return;
+        }
+
+
         String quantityString = mQuantityEditText.getText().toString().trim();
-        if(quantityString == null){
+        if(quantityString == null || TextUtils.isEmpty(quantityString)){
             Toast.makeText(this, "Please insert valid quantity", Toast.LENGTH_SHORT).show();
             mValidInput=false;
             return;
         }
+        Integer quantity = Integer.parseInt(mQuantityEditText.getText().toString());
+        if(quantity < 0){
+            Toast.makeText(this, "Please insert valid quantity", Toast.LENGTH_SHORT).show();
+            mValidInput=false;
+            return;
+        }
+
         String supplierString = mSupplierEditText.getText().toString().trim();
         if(TextUtils.isEmpty(supplierString)){
             Toast.makeText(this, "Please insert valid supplier", Toast.LENGTH_SHORT).show();
@@ -356,16 +373,8 @@ public class DetailActivity extends AppCompatActivity implements
 
         values.put(ItemEntry.COLUMN_ITEM_NAME, nameString);
 
-        int price = 0;
-        if (!TextUtils.isEmpty(priceString)){
-            price = Integer.parseInt(priceString);
-        }
         values.put(ItemEntry.COLUMN_ITEM_PRICE, price);
 
-        int quantity = 0;
-        if (!TextUtils.isEmpty(quantityString)){
-            quantity = Integer.parseInt(quantityString);
-        }
         values.put(ItemEntry.COLUMN_ITEM_QUANTITY, quantity);
 
         values.put(ItemEntry.COLUMN_ITEM_SUPPLIER, supplierString);
