@@ -282,8 +282,9 @@ public class DetailActivity extends AppCompatActivity implements
     private void setPic(String path) {
         // Get the dimensions of the View
 
-        int targetW = mImageEdit.getWidth();;
-        int targetH = mImageEdit.getHeight();
+
+        int targetW = getResources().getDimensionPixelSize(R.dimen.image_width);
+        int targetH = getResources().getDimensionPixelSize(R.dimen.image_height);
 
 
         // Get the dimensions of the bitmap
