@@ -21,7 +21,6 @@
         <activity
             android:name=".DetailActivity"
             android:label="Detail View"
-            android:configChanges="orientation|screenSize"
             android:parentActivityName=".InventoryActivity">
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data

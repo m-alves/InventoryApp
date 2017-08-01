@@ -22,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -92,6 +93,9 @@ public class DetailActivity extends AppCompatActivity implements
 
     /** Boolean flag that keeps track of whether the item has been edited (true) or not (false) */
     private boolean mItemHasChanged = false;
+
+    //Key for image URI;
+    private final String IMAGE_URI = "IMAGE_URI";
 
     /**
      * OnTouchListener that listens for any user touches on a View, implying that they are modifying
@@ -226,6 +230,34 @@ public class DetailActivity extends AppCompatActivity implements
         });
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (mImageUri != null)
+            outState.putString(IMAGE_URI, mImageUri.toString());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        if (savedInstanceState.containsKey(IMAGE_URI) &&
+                !savedInstanceState.getString(IMAGE_URI).equals("")) {
+            mImageUri = Uri.parse(savedInstanceState.getString(IMAGE_URI));
+            mImageString = mImageUri.toString();
+
+            ViewTreeObserver viewTreeObserver = mImageEdit.getViewTreeObserver();
+            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    mImageEdit.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    mImageString = mImageUri.toString();
+                    setPic(mImageString);
+                    mNewImage = true;
+                }
+            });
+        }}
 
     /*This method proceeds with the capture of the image. The basic structure is the same as
     *the example in the documentation. First, a file is created. If successful, the image is
@@ -259,7 +291,14 @@ public class DetailActivity extends AppCompatActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            setPic(mCurrentPhotoPath);
+            ViewTreeObserver viewTreeObserver = mImageEdit.getViewTreeObserver();
+            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    mImageEdit.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    setPic(mCurrentPhotoPath);
+                }
+            });
             mNewImage = true;
         }
     }
@@ -283,8 +322,8 @@ public class DetailActivity extends AppCompatActivity implements
         // Get the dimensions of the View
 
 
-        int targetW = getResources().getDimensionPixelSize(R.dimen.image_width);
-        int targetH = getResources().getDimensionPixelSize(R.dimen.image_height);
+        int targetW = mImageEdit.getWidth();
+        int targetH = mImageEdit.getHeight();
 
 
         // Get the dimensions of the bitmap
@@ -553,8 +592,16 @@ public class DetailActivity extends AppCompatActivity implements
             //Depending on the uri, we can put the dummy item in the imageView, or
             // we process the item image with setPic()
             mImageUri = Uri.parse(imageUriString);
-            setPic(imageUriString);
             mImageString = imageUriString;
+            ViewTreeObserver viewTreeObserver = mImageEdit.getViewTreeObserver();
+            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    mImageEdit.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    setPic(mImageString);
+                }
+            });
+
         }
     }
 
